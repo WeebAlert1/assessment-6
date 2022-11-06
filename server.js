@@ -11,7 +11,7 @@ app.use('/styles', express.static(path.join(__dirname, "./public/index.css")));
 app.use('/js', express.static(path.join(__dirname, "./public/index.js")));
 
 app.get('/api/robots', (req, res) => {
-    
+    let {botsArr} = req.body;
     try {
         res.status(200).send(botsArr)
     } catch (error) {
