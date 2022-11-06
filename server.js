@@ -6,17 +6,9 @@ const {shuffleArray} = require('./utils')
 
 app.use(express.json())
 
-app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.html"))
-})
-
-app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.css"))
-})
-
-app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "./public/index.js"))
-})
+app.use(express.static(path.join(__dirname, "./public")));
+app.use('/styles', express.static(path.join(__dirname, "./public/index.css")));
+app.use('/js', express.static(path.join(__dirname, "./public/index.js")));
 
 app.get('/api/robots', (req, res) => {
     try {
