@@ -4,6 +4,17 @@ const app = express()
 const {bots, playerRecord} = require('./data')
 const {shuffleArray} = require('./utils')
 
+// include and initialize the rollbar library with your access token
+var Rollbar = require("rollbar");
+var rollbar = new Rollbar({
+  accessToken: '8641353009bf41c49db97ca0005399bf',
+  captureUncaught: true,
+  captureUnhandledRejections: true
+});
+
+// record a generic message and send it to Rollbar
+rollbar.log("Hello world!");
+
 app.use(express.json())
 
 app.use(express.static(path.join(__dirname, "./public")));
@@ -13,6 +24,7 @@ app.use('/js', express.static(path.join(__dirname, "./public/index.js")));
 app.get('/api/robots', (req, res) => {
     let {botsArr} = req.body;
     try {
+        rollbar.log("Got bot, displying bots");
         res.status(200).send(botsArr)
     } catch (error) {
         console.log('ERROR GETTING BOTS', error)
@@ -22,11 +34,13 @@ app.get('/api/robots', (req, res) => {
 
 app.get('/api/robots/five', (req, res) => {
     try {
+        rollbar.log("Five robots added successfully");
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
         let compDuo = shuffled.slice(6, 8)
         res.status(200).send({choices, compDuo})
     } catch (error) {
+        rollbar.error("error getting five bots");
         console.log('ERROR GETTING FIVE BOTS', error)
         res.sendStatus(400)
     }
@@ -34,6 +48,7 @@ app.get('/api/robots/five', (req, res) => {
 
 app.post('/api/duel', (req, res) => {
     try {
+        rollbar.log("Success getting duels");
         // getting the duos from the front end
         let {compDuo, playerDuo} = req.body
 
@@ -58,6 +73,7 @@ app.post('/api/duel', (req, res) => {
             res.status(200).send('You won!')
         }
     } catch (error) {
+        rollbar.error("Dueling failed")
         console.log('ERROR DUELING', error)
         res.sendStatus(400)
     }
@@ -77,3 +93,4 @@ const port = process.env.PORT || 3000
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
+
